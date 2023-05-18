@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from .errors import PokemonNotFoundException
+from .errors import PokemonNotFound
 from .games import Game
 from .networking import GraphQLSession
 
@@ -36,7 +36,7 @@ class PokeAPIClient(GraphQLSession):
         exists = await self.get_if_pokemon_exists(pokemon_name)
 
         if not exists:
-            raise PokemonNotFoundException(pokemon_name)
+            raise PokemonNotFound(pokemon_name)
 
         data = await self.query_graphql(
             'https://beta.pokeapi.co/graphql/v1beta',

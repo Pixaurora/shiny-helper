@@ -9,6 +9,14 @@ class NetworkingException(Exception):
         super().__init__(*args)
 
 
-class PokemonNotFoundException(Exception):
+class PokemonNotFound(Exception):
     def __init__(self, pokemon_name: str):
         super().__init__(f'{pokemon_name} not found!')
+
+
+class InvalidSaveLocation(Exception):
+    ...
+
+
+class NonAlphanumericString(Exception):
+    ...
