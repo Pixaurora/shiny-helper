@@ -2,11 +2,10 @@ import os
 import re
 from pathlib import Path
 
-from desktop_notifier import DesktopNotifier, Notification
-
 from .base_command import BaseCommand, command, command_mapping
 from .counter import Counter
 from .errors import NonAlphanumericString
+from .file_polling import FilePoller
 
 
 class AlphanumericString(str):
@@ -22,9 +21,6 @@ hunt_path: Path = Path.home().joinpath('.config/shiny-helper/counters/')
 
 def get_counter_location(hunt_name: str) -> Path:
     return hunt_path.joinpath(f'{hunt_name}.json')
-
-
-notifier = DesktopNotifier('Shiny Helper')
 
 
 @command('initHunt')
@@ -49,21 +45,25 @@ class IncrementHunt(BaseCommand):
     increment: int = 1
     hunt_name: AlphanumericString
 
-    notify: bool = False
+    signal_file: Path = Path('./watched')
+    polling_rate: int = 1
 
     async def main(self) -> None:
-        async with Counter(get_counter_location(self.hunt_name)) as counter:
-            old_count: int = counter.count
-            counter.count += self.increment
-            new_count: int = counter.count
+        poller = FilePoller(self.signal_file, self.polling_rate)
 
-        title: str = f'{self.hunt_name} encounters'
-        message: str = f'{old_count} -> {new_count}'
+        @poller.on_update
+        async def on_update() -> None:
+            async with Counter(get_counter_location(self.hunt_name)) as counter:
+                counter.count += self.increment
+                new_count: int = counter.count
 
-        if self.notify:
-            await notifier.send_notification(Notification(title, message))
-        else:
-            print(f'{title}: {message}')
+            print(f'{self.hunt_name} encounters: {new_count - self.increment} -> {new_count}')
+
+        async with Counter(get_counter_location(self.hunt_name)) as hunt:
+            print(f'Hunt {self.hunt_name} is currently at {hunt.count} encounters total.')
+            print(f'Run `touch {self.signal_file.absolute()}` in a different shell to increment the hunt!')
+
+        await poller.poll()
 
 
 class ShinyHelper(BaseCommand):
