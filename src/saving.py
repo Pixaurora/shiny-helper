@@ -1,9 +1,7 @@
 import json
-from abc import ABC, abstractproperty
+from abc import ABC
 from pathlib import Path
 from typing import Generic, Self, TypedDict, TypeVar
-
-import aiofiles
 
 from .errors import InvalidSaveLocation
 
@@ -31,29 +29,29 @@ class SaveableAsJSON(ABC, Generic[D]):
 
         self._save_location = new_location
 
-    async def save(self, new_location: Path) -> None:
+    def save(self, new_location: Path) -> None:
         if new_location is None:
             assert self.location is not None
             new_location = self.location
 
-        async with aiofiles.open(new_location, 'w') as file:
-            await file.write(json.dumps(self.data))
+        with open(new_location, 'w') as file:
+            file.write(json.dumps(self.data))
 
         self.location = new_location
 
-    async def load(self, save_location: Path) -> None:
+    def load(self, save_location: Path) -> None:
         if not save_location.exists() or not save_location.is_file():
             raise InvalidSaveLocation(f'Save location must be a file, not {save_location.stat().st_mode}')
 
-        async with aiofiles.open(save_location, 'r') as file:
-            content: str = '\n'.join(await file.readlines())
+        with open(save_location, 'r') as file:
+            content: str = '\n'.join(file.readlines())
             new_data: D = json.loads(content)
 
         self.data = new_data
 
-    async def __aenter__(self) -> Self:
-        await self.load(self.location)
+    def __enter__(self) -> Self:
+        self.load(self.location)
         return self
 
-    async def __aexit__(self, exc_t, exc_v, exc_tb) -> None:
-        await self.save(self.location)
+    def __exit__(self, exc_t, exc_v, exc_tb) -> None:
+        self.save(self.location)

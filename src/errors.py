@@ -1,10 +1,10 @@
-import aiohttp
+import httpx
 
 
 class NetworkingException(Exception):
-    response: aiohttp.ClientResponse
+    response: httpx.Response
 
-    def __init__(self, response: aiohttp.ClientResponse, *args: object) -> None:
+    def __init__(self, response: httpx.Response, *args: object) -> None:
         self.response = response
         super().__init__(*args)
 

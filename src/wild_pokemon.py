@@ -2,7 +2,7 @@ from typing import TypedDict
 
 from .errors import PokemonNotFound
 from .games import Game
-from .networking import GraphQLSession
+from .networking import GraphQLClient
 
 
 class Move(TypedDict):
@@ -10,15 +10,15 @@ class Move(TypedDict):
     pp: int
 
 
-class PokeAPIClient(GraphQLSession):
+class PokeAPIClient(GraphQLClient):
     game: Game
 
     def __init__(self, game: Game, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.game = game
 
-    async def get_if_pokemon_exists(self, pokemon_name: str) -> bool:
-        data = await self.query_graphql(
+    def get_if_pokemon_exists(self, pokemon_name: str) -> bool:
+        data = self.query_graphql(
             'https://beta.pokeapi.co/graphql/v1beta',
             """
             query pokemonExists($pokemon_name: String) {
@@ -32,13 +32,13 @@ class PokeAPIClient(GraphQLSession):
 
         return len(data['species']) > 0
 
-    async def get_wild_moveset(self, pokemon_name: str, level: int) -> list[Move]:
-        exists = await self.get_if_pokemon_exists(pokemon_name)
+    def get_wild_moveset(self, pokemon_name: str, level: int) -> list[Move]:
+        exists = self.get_if_pokemon_exists(pokemon_name)
 
         if not exists:
             raise PokemonNotFound(pokemon_name)
 
-        data = await self.query_graphql(
+        data = self.query_graphql(
             'https://beta.pokeapi.co/graphql/v1beta',
             """
             query getWildMoveset($game_name: String, $pokemon_name: String, $level: Int) {

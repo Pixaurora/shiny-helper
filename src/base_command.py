@@ -15,13 +15,13 @@ class BaseCommand(ABC, Tap):
     def _get_program_choices(self) -> list[str]:
         return list(command_mapping.keys())
 
-    async def run(self) -> None:
+    def run(self) -> None:
         self.parse_args()
 
-        await self.main()
+        self.main()
 
     @abstractmethod
-    async def main(self) -> None:
+    def main(self) -> None:
         ...
 
 

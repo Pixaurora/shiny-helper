@@ -1,8 +1,8 @@
-import asyncio
+import time
 from pathlib import Path
-from typing import Any, Callable, Coroutine, NoReturn
+from typing import Callable, NoReturn
 
-UpdateFunction = Callable[[], Coroutine[Any, Any, None]]
+UpdateFunction = Callable[[], None]
 
 
 class FilePoller:
@@ -24,7 +24,7 @@ class FilePoller:
     def get_modified_time(self) -> bool | float:
         return self.file_to_poll.exists() and self.file_to_poll.stat().st_mtime
 
-    async def poll(self) -> NoReturn:
+    def poll(self) -> NoReturn:
         assert self.update_function is not None
 
         polling_delay: float = 1 / self.polling_rate
@@ -36,8 +36,8 @@ class FilePoller:
             newest_file_time = self.get_modified_time()
 
             if newest_file_time != remembered_file_time:
-                await self.update_function()
+                self.update_function()
 
                 remembered_file_time = newest_file_time
 
-            await asyncio.sleep(polling_delay)
+            time.sleep(polling_delay)
