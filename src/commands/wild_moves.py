@@ -10,10 +10,9 @@ class GetPokemonMoves(NamedCommand):
     def name(self) -> str:
         return 'getPokemonMoves'
 
-    def main(self) -> None:
-        client = PokeAPIClient(gen_7_games[0])
-
-        moves: list[Move] = client.get_wild_moveset(self.pokemon_name, self.level)
+    async def main(self) -> None:
+        async with PokeAPIClient(gen_7_games[0]) as client:
+            moves: list[Move] = await client.get_wild_moveset(self.pokemon_name, self.level)
 
         print(f'Total PP: {sum(move["pp"] for move in moves)}')
 

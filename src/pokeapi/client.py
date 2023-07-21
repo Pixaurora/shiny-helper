@@ -17,8 +17,8 @@ class PokeAPIClient(GraphQLClient):
         super().__init__(*args, **kwargs)
         self.game = game
 
-    def get_if_pokemon_exists(self, pokemon_name: str) -> bool:
-        data = self.query_graphql(
+    async def get_if_pokemon_exists(self, pokemon_name: str) -> bool:
+        data = await self.query_graphql(
             'https://beta.pokeapi.co/graphql/v1beta',
             """
             query pokemonExists($pokemon_name: String) {
@@ -32,13 +32,13 @@ class PokeAPIClient(GraphQLClient):
 
         return len(data['species']) > 0
 
-    def get_wild_moveset(self, pokemon_name: str, level: int) -> list[Move]:
-        exists = self.get_if_pokemon_exists(pokemon_name)
+    async def get_wild_moveset(self, pokemon_name: str, level: int) -> list[Move]:
+        exists: bool = await self.get_if_pokemon_exists(pokemon_name)
 
         if not exists:
             raise PokemonNotFound(pokemon_name)
 
-        data = self.query_graphql(
+        data = await self.query_graphql(
             'https://beta.pokeapi.co/graphql/v1beta',
             """
             query getWildMoveset($game_name: String, $pokemon_name: String, $level: Int) {

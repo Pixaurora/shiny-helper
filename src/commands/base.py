@@ -16,13 +16,13 @@ class BaseCommand(ABC, Tap):
     def _get_program_choices(self) -> list[str]:
         ...
 
-    def run(self) -> None:
+    async def run(self) -> None:
         self.parse_args()
 
-        self.main()
+        await self.main()
 
     @abstractmethod
-    def main(self) -> None:
+    async def main(self) -> None:
         ...
 
 

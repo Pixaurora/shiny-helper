@@ -12,7 +12,7 @@ class InitializeHunt(NamedCommand):
     def name(self) -> str:
         return 'initHunt'
 
-    def main(self) -> None:
+    async def main(self) -> None:
         new_counter: Counter = Counter()
         new_counter.data = {'count': self.first_value}
 

@@ -14,7 +14,7 @@ class ShinyHelper(BaseCommand):
     def _get_program_choices(self) -> list[str]:
         return [command.name for command in commands]
 
-    def main(self) -> None:
+    async def main(self) -> None:
         command: NamedCommand = command_mapping[self.command_name]
 
-        command.run()
+        await command.run()
