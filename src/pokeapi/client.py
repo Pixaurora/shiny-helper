@@ -1,8 +1,8 @@
 from typing import TypedDict
 
-from .errors import PokemonNotFound
+from ..errors import PokemonNotFound
 from .games import Game
-from .networking import GraphQLClient
+from .graphql import GraphQLClient
 
 
 class Move(TypedDict):

@@ -3,31 +3,31 @@ from abc import ABC
 from pathlib import Path
 from typing import Generic, Self, TypedDict, TypeVar
 
-from .errors import InvalidSaveLocation
+from ..errors import InvalidSaveLocation
 
 D = TypeVar('D', bound=TypedDict)
 
 
 class SaveableAsJSON(ABC, Generic[D]):
     data: D
-    _save_location: Path | None
+    __save_location: Path | None
 
     def __init__(self, save_location: Path | None = None) -> None:
         self.location = save_location
 
     @property
     def location(self) -> Path:
-        if self._save_location is None:
+        if self.__save_location is None:
             raise InvalidSaveLocation('Save location is None but must be a Path object.')
 
-        return self._save_location
+        return self.__save_location
 
     @location.setter
     def location(self, new_location: Path | None) -> None:
         if new_location is not None and new_location.exists() and not new_location.is_file():
             raise InvalidSaveLocation(f'Save location must be a file, not {new_location.stat().st_mode}')
 
-        self._save_location = new_location
+        self.__save_location = new_location
 
     def save(self, new_location: Path) -> None:
         if new_location is None:

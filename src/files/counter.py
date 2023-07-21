@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from .saving import SaveableAsJSON
+from .json import SaveableAsJSON
 
 
 class CounterInfo(TypedDict):

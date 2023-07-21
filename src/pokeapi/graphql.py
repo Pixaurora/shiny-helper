@@ -2,7 +2,7 @@ import httpx
 from httpx import Client
 from typing_extensions import Self
 
-from .errors import NetworkingException
+from ..errors import NetworkingException
 
 
 class GraphQLClient(Client):
