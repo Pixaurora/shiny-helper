@@ -1,9 +1,10 @@
 from .base import BaseCommand, NamedCommand
 from .increment_hunt import IncrementHuntCommand
 from .init_hunt import InitializeHuntCommand
+from .ui import UICommand
 from .wild_moves import GetPokemonMovesCommand
 
-commands: list[NamedCommand] = [IncrementHuntCommand(), InitializeHuntCommand(), GetPokemonMovesCommand()]
+commands: list[NamedCommand] = [UICommand(), IncrementHuntCommand(), InitializeHuntCommand(), GetPokemonMovesCommand()]
 command_mapping: dict[str, NamedCommand] = {command.name: command for command in commands}
 
 

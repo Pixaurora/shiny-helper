@@ -3,8 +3,8 @@ from pathlib import Path
 
 from ..errors import NonAlphanumericString
 
-shiny_helper_config: Path = Path.home().joinpath('.config/shiny-helper')
-hunt_path: Path = shiny_helper_config.joinpath('counters')
+program_config: Path = Path.home() / '.config/shiny-helper'
+hunt_path: Path = program_config / 'counters'
 
 
 class AlphanumericString(str):
@@ -16,4 +16,11 @@ class AlphanumericString(str):
 
 
 def get_counter_location(hunt_name: str) -> Path:
-    return hunt_path.joinpath(f'{hunt_name}.json')
+    return hunt_path / f'{hunt_name}.json'
+
+
+def get_counter_names() -> list[str]:
+    assert hunt_path.is_dir() or not hunt_path.exists()
+    hunt_path.mkdir(parents=True, exist_ok=True)
+
+    return [path.name.replace(path.suffix, '') for path in hunt_path.iterdir() if path.is_file()]
