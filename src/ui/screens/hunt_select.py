@@ -22,9 +22,4 @@ class HuntSelectScreen(Screen):
         app: DOMNode | None = self.parent
         assert isinstance(app, App)
 
-        await app.push_screen('increment_hunt')
-
-        screen: Screen = app.screen
-        assert isinstance(screen, IncrementHuntScreen)
-
-        await screen.prepare(str(hunt_name))
+        await app.push_screen(IncrementHuntScreen(str(hunt_name)))
