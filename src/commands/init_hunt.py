@@ -4,7 +4,7 @@ from ..files import AlphanumericString, Counter, get_counter_location
 from .base import NamedCommand
 
 
-class InitializeHunt(NamedCommand):
+class InitializeHuntCommand(NamedCommand):
     first_value: int = 0
     hunt_name: AlphanumericString
 

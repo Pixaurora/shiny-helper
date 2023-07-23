@@ -1,13 +1,13 @@
 from .base import BaseCommand, NamedCommand
-from .increment_hunt import IncrementHunt
-from .init_hunt import InitializeHunt
-from .wild_moves import GetPokemonMoves
+from .increment_hunt import IncrementHuntCommand
+from .init_hunt import InitializeHuntCommand
+from .wild_moves import GetPokemonMovesCommand
 
-commands: list[NamedCommand] = [IncrementHunt(), InitializeHunt(), GetPokemonMoves()]
+commands: list[NamedCommand] = [IncrementHuntCommand(), InitializeHuntCommand(), GetPokemonMovesCommand()]
 command_mapping: dict[str, NamedCommand] = {command.name: command for command in commands}
 
 
-class ShinyHelper(BaseCommand):
+class ShinyHelperCommand(BaseCommand):
     def parse_args(self) -> None:
         super().parse_args(known_only=True)
 

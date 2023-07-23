@@ -1,10 +1,10 @@
 import asyncio
 
-from .commands import ShinyHelper
+from .commands import ShinyHelperCommand
 
 
 async def main() -> None:
-    await ShinyHelper().run()
+    await ShinyHelperCommand().run()
 
 
 asyncio.get_event_loop().run_until_complete(main())

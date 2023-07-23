@@ -4,7 +4,7 @@ from ..files import AlphanumericString, Counter, FilePoller, get_counter_locatio
 from .base import NamedCommand
 
 
-class IncrementHunt(NamedCommand):
+class IncrementHuntCommand(NamedCommand):
     increment: int = 1
     hunt_name: AlphanumericString
 

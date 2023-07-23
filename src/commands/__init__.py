@@ -1,1 +1,1 @@
-from .main import ShinyHelper
+from .main import ShinyHelperCommand

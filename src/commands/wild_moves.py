@@ -2,7 +2,7 @@ from ..pokeapi import Move, PokeAPIClient, gen_7_games
 from .base import NamedCommand
 
 
-class GetPokemonMoves(NamedCommand):
+class GetPokemonMovesCommand(NamedCommand):
     pokemon_name: str
     level: int
 
