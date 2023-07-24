@@ -13,12 +13,9 @@ class InitializeHuntCommand(NamedCommand):
         return 'initHunt'
 
     async def main(self) -> None:
-        new_counter: Counter = Counter()
-        new_counter.data = {'count': self.first_value}
+        new_counter: Counter = Counter.from_data({'count': self.first_value})
 
         save_location: Path = get_counter_location(self.hunt_name)
-        save_location.parent.mkdir(parents=True, exist_ok=True)
-
         new_counter.save(save_location)
 
         print('New hunt successfully initialized!')

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ..files import AlphanumericString, Counter, FilePoller, get_counter_location
+from ..files import AlphanumericString, Counter, FilePoller
 from .base import NamedCommand
 
 
@@ -18,16 +18,16 @@ class IncrementHuntCommand(NamedCommand):
     async def main(self) -> None:
         poller = FilePoller(self.signal_file, self.polling_rate)
 
+        hunt = Counter.loaded_from_name(self.hunt_name)
+
         @poller.on_update
         async def on_update() -> None:
-            with Counter(get_counter_location(self.hunt_name)) as counter:
-                counter.count += self.increment
-                new_count: int = counter.count
+            hunt.count += self.increment
+            hunt.save()
 
-            print(f'{self.hunt_name} encounters: {new_count - self.increment} -> {new_count}')
+            print(f'{self.hunt_name} encounters: {hunt.count - self.increment} -> {hunt.count}')
 
-        with Counter(get_counter_location(self.hunt_name)) as hunt:
-            print(f'Hunt {self.hunt_name} is currently at {hunt.count} encounters total.')
-            print(f'Run `touch {self.signal_file.absolute()}` in a different shell to increment the hunt!')
+        print(f'Hunt {self.hunt_name} is currently at {hunt.count} encounters total.')
+        print(f'Run `touch {self.signal_file.absolute()}` in a different shell to increment the hunt!')
 
         await poller.poll()

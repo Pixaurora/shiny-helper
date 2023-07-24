@@ -3,7 +3,7 @@ from textual.screen import Screen
 from textual.widget import Widget
 from textual.widgets import Button, Label
 
-from ...files import Counter, get_counter_location
+from ...files import Counter
 
 
 class IncrementHuntScreen(Screen):
@@ -14,8 +14,7 @@ class IncrementHuntScreen(Screen):
     def __init__(self, hunt_name: str) -> None:
         super().__init__()
 
-        self.hunt = Counter(get_counter_location(hunt_name))
-        self.hunt.load()
+        self.hunt = Counter.loaded_from_name(hunt_name)
 
     @property
     def button_text(self) -> str:
@@ -27,7 +26,7 @@ class IncrementHuntScreen(Screen):
 
     async def increment(self) -> None:
         self.hunt.count += 1
-        self.hunt.save(None)
+        self.hunt.save()
 
         count_button: Widget = self.get_child_by_id('hunt_count')
         assert isinstance(count_button, Button)
