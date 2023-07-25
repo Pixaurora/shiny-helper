@@ -13,10 +13,10 @@ class IncrementHuntScreen(Screen):
 
     hunt: Counter
 
-    def __init__(self, hunt_name: str) -> None:
+    def __init__(self, hunt: Counter) -> None:
         super().__init__()
 
-        self.hunt = Counter.loaded_from_name(hunt_name)
+        self.hunt = hunt
 
         poller: FilePoller = FilePoller(Path('./watched'), 5, self.increment)
         self.set_interval(poller.polling_delay, poller.poll_once)

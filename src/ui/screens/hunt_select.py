@@ -1,25 +1,35 @@
-from textual.app import App, ComposeResult, DOMNode
-from textual.screen import Screen
+from textual.app import ComposeResult
+from textual.screen import ModalScreen
 from textual.widgets import Button, Label, OptionList
 
-from ...files import get_counter_names
-from .increment_hunt import IncrementHuntScreen
+from ...errors import NoOptionSelected
+from ...files import Counter, get_counter_names
 
 
-class HuntSelectScreen(Screen):
+class HuntChooser(OptionList):
+    def __init__(self, id: str | None = None) -> None:
+        super().__init__(*get_counter_names(), name="Choose your counter", id=id)
+
+    def get_hunt(self) -> Counter:
+        option_index: int | None = self.highlighted
+
+        if option_index is None:
+            raise NoOptionSelected()
+
+        name: str = str(self.get_option_at_index(option_index).prompt)
+
+        return Counter.loaded_from_name(name)
+
+
+class HuntSelectScreen(ModalScreen[Counter]):
     def compose(self) -> ComposeResult:
         yield Label('Choose one of your hunts to get started!')
 
-        yield OptionList(*get_counter_names())
-        yield Button('Go!')
+        yield HuntChooser(id='hunt_chooser')
+        yield Button('Go!', id='go')
 
-    async def on_button_pressed(self) -> None:
-        options: OptionList = self.get_child_by_type(OptionList)
-        option_index: int = options.highlighted or 0
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == 'go':
+            hunt: Counter = self.get_child_by_type(HuntChooser).get_hunt()
 
-        hunt_name: str = str(options.get_option_at_index(option_index).prompt)
-
-        app: DOMNode | None = self.parent
-        assert isinstance(app, App)
-
-        await app.push_screen(IncrementHuntScreen(str(hunt_name)))
+            self.dismiss(hunt)

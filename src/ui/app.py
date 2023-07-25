@@ -1,7 +1,8 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Header
+from textual.widgets import Button, Header
 
-from .screens import HuntSelectScreen
+from ..files import Counter
+from .screens import HuntSelectScreen, IncrementHuntScreen
 
 
 class ShinyHelperUI(App):
@@ -9,5 +10,11 @@ class ShinyHelperUI(App):
 
     def compose(self) -> ComposeResult:
         yield Header(True, name='Shiny Helper')
+        yield Button('Select shiny hunt!', id='select_hunt')
 
-        self.push_screen(HuntSelectScreen())
+    async def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == 'select_hunt':
+            self.push_screen(HuntSelectScreen(), self.start_hunt)
+
+    def start_hunt(self, hunt: Counter):
+        self.push_screen(IncrementHuntScreen(hunt))

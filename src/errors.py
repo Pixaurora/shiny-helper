@@ -20,3 +20,8 @@ class InvalidSaveLocation(Exception):
 
 class NonAlphanumericString(Exception):
     ...
+
+
+class NoOptionSelected(Exception):
+    def __init__(self):
+        super().__init__('You must select an option!')
