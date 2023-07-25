@@ -7,37 +7,40 @@ UpdateFunction = Callable[[], Coroutine[Any, Any, None]]
 
 class FilePoller:
     file_to_poll: Path
-    polling_rate: int
+    remembered_file_time: float | bool
+
+    polling_delay: float
 
     update_function: UpdateFunction | None
 
-    def __init__(self, path: Path, polling_rate: int) -> None:
+    def __init__(self, path: Path, polling_rate: int, update_function: UpdateFunction | None = None) -> None:
         self.file_to_poll = path
-        self.polling_rate = polling_rate
-        self.update_function = None
+        self.remembered_file_time = self.get_modified_time()
 
-    def on_update(self, update_func: UpdateFunction) -> UpdateFunction:
-        self.update_function = update_func
+        self.polling_delay = 1 / polling_rate
 
-        return update_func
+        self.update_function = update_function
 
-    def get_modified_time(self) -> bool | float:
+    def on_update(self, update_function: UpdateFunction) -> UpdateFunction:
+        self.update_function = update_function
+
+        return update_function
+
+    def get_modified_time(self) -> float | bool:
         return self.file_to_poll.exists() and self.file_to_poll.stat().st_mtime
 
-    async def poll(self) -> NoReturn:
+    async def poll_once(self) -> None:
         assert self.update_function is not None
 
-        polling_delay: float = 1 / self.polling_rate
+        newest_file_time: float | bool = self.get_modified_time()
 
-        newest_file_time: float | bool
-        remembered_file_time: float | bool = self.get_modified_time()
+        if newest_file_time != self.remembered_file_time:
+            await self.update_function()
 
+            self.remembered_file_time = newest_file_time
+
+    async def poll_forever(self) -> NoReturn:
         while True:
-            newest_file_time = self.get_modified_time()
+            await self.poll_once()
 
-            if newest_file_time != remembered_file_time:
-                await self.update_function()
-
-                remembered_file_time = newest_file_time
-
-            await asyncio.sleep(polling_delay)
+            await asyncio.sleep(self.polling_delay)

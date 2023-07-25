@@ -30,4 +30,4 @@ class IncrementHuntCommand(NamedCommand):
         print(f'Hunt {self.hunt_name} is currently at {hunt.count} encounters total.')
         print(f'Run `touch {self.signal_file.absolute()}` in a different shell to increment the hunt!')
 
-        await poller.poll()
+        await poller.poll_forever()

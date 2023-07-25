@@ -1,9 +1,11 @@
+from pathlib import Path
+
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widget import Widget
 from textual.widgets import Button, Label
 
-from ...files import Counter
+from ...files import Counter, FilePoller
 
 
 class IncrementHuntScreen(Screen):
@@ -15,6 +17,9 @@ class IncrementHuntScreen(Screen):
         super().__init__()
 
         self.hunt = Counter.loaded_from_name(hunt_name)
+
+        poller: FilePoller = FilePoller(Path('./watched'), 5, self.increment)
+        self.set_interval(poller.polling_delay, poller.poll_once)
 
     @property
     def button_text(self) -> str:
