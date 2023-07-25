@@ -28,8 +28,8 @@ class SerializableToDict(Protocol, Generic[D]):
         return new_data
 
 
-class SaveableToJSON(SerializableToDict, Protocol, Generic[D]):
-    __location: Path | None
+class SaveableToJSON(SerializableToDict[D], Protocol):
+    __location: Path | None = None
 
     @property
     def location(self) -> Path:
