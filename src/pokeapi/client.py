@@ -71,3 +71,23 @@ class PokeAPIClient(GraphQLClient):
         )
 
         return [move['pokemon_v2_move'] for move in data['known_moves']]
+
+    async def get_sprite_locations(self, pokemon_name: str) -> dict:
+        exists: bool = await self.get_if_pokemon_exists(pokemon_name)
+
+        if not exists:
+            raise PokemonNotFound(pokemon_name)
+
+        data = await self.query_graphql(
+            'https://beta.pokeapi.co/graphql/v1beta',
+            """
+            query getWildMoveset($pokemon_name: String) {
+            found_sprites: pokemon_v2_pokemonsprites(where: {pokemon_v2_pokemon: {name: {_eq: $pokemon_name}}}) {
+                sprites
+            }
+            }
+            """,
+            pokemon_name=pokemon_name,
+        )
+
+        return data['found_sprites'][0]['sprites']
