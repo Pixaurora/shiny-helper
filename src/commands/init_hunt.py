@@ -1,6 +1,4 @@
-from pathlib import Path
-
-from ..files import AlphanumericString, Counter, get_counter_location
+from ..files import AlphanumericString, Hunt
 from .base import NamedCommand
 
 
@@ -13,9 +11,9 @@ class InitializeHuntCommand(NamedCommand):
         return 'initHunt'
 
     async def main(self) -> None:
-        new_counter: Counter = Counter.from_data({'count': self.first_value})
+        new_hunt: Hunt = Hunt.from_data({'count': self.first_value})
+        new_hunt.name = self.hunt_name
 
-        save_location: Path = get_counter_location(self.hunt_name)
-        new_counter.save(save_location)
+        new_hunt.save()
 
         print('New hunt successfully initialized!')

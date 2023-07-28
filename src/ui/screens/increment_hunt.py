@@ -5,15 +5,15 @@ from textual.screen import Screen
 from textual.widget import Widget
 from textual.widgets import Button, Label
 
-from ...files import Counter, FilePoller
+from ...files import FilePoller, Hunt
 
 
 class IncrementHuntScreen(Screen):
     TITLE = ""
 
-    hunt: Counter
+    hunt: Hunt
 
-    def __init__(self, hunt: Counter) -> None:
+    def __init__(self, hunt: Hunt) -> None:
         super().__init__()
 
         self.hunt = hunt

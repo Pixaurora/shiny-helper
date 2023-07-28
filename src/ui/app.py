@@ -1,7 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Button, Header
 
-from ..files import Counter
+from ..files import Hunt
 from .screens import HuntSelectScreen, IncrementHuntScreen
 
 
@@ -16,5 +16,5 @@ class ShinyHelperUI(App):
         if event.button.id == 'select_hunt':
             self.push_screen(HuntSelectScreen(), self.start_hunt)
 
-    def start_hunt(self, hunt: Counter):
+    def start_hunt(self, hunt: Hunt):
         self.push_screen(IncrementHuntScreen(hunt))

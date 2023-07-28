@@ -1,3 +1,3 @@
-from .counter import Counter
-from .locations import AlphanumericString, get_counter_location, get_counter_names
+from .hunt import Hunt
+from .locations import AlphanumericString, get_hunt_location, get_hunt_names
 from .polling import FilePoller
