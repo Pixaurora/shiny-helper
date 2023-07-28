@@ -3,8 +3,8 @@ from pathlib import Path
 
 from ..errors import NonAlphanumericString
 
-program_config: Path = Path.home() / '.config/shiny-helper'
-hunt_path: Path = program_config / 'counters'
+PROGRAM_CONFIG: Path = Path.home() / '.config/shiny-helper'
+SAVED_HUNTS: Path = PROGRAM_CONFIG / 'counters'
 
 
 class AlphanumericString(str):
@@ -15,16 +15,26 @@ class AlphanumericString(str):
             raise NonAlphanumericString('Alphanumeric strings must contain only letters and numbers.')
 
 
-def get_hunt_location(hunt_name: str) -> Path:
-    return hunt_path / f'{hunt_name}.json'
+def ready_to_be_file(location: Path) -> bool:
+    if not location.exists():
+        containing_directory: Path = location.parent
+        containing_directory.mkdir(parents=True, exist_ok=True)
+
+        return True
+
+    return location.is_file()
 
 
 def get_name_from_path(location: Path) -> str:
     return location.name.replace(location.suffix, '')
 
 
-def get_hunt_names() -> list[str]:
-    assert hunt_path.is_dir() or not hunt_path.exists()
-    hunt_path.mkdir(parents=True, exist_ok=True)
+def get_hunt_location(hunt_name: str) -> Path:
+    return SAVED_HUNTS / f'{hunt_name}.json'
 
-    return [get_name_from_path(path) for path in hunt_path.iterdir() if path.is_file()]
+
+def get_hunt_names() -> list[str]:
+    if not SAVED_HUNTS.exists():
+        return []
+
+    return [get_name_from_path(path) for path in SAVED_HUNTS.iterdir() if path.is_file()]

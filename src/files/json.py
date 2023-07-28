@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 from typing import Generic, Protocol, Self, TypedDict, TypeVar
 
+from .locations import ready_to_be_file
+
 from ..errors import InvalidSaveLocation
 
 D = TypeVar('D', bound=TypedDict)
@@ -40,7 +42,7 @@ class SaveableToJSON(SerializableToDict[D], Protocol):
 
     @location.setter
     def location(self, new_location) -> None:
-        if new_location.exists() and not new_location.is_file():
+        if not ready_to_be_file(new_location):
             raise InvalidSaveLocation(f'Save location must be a file, not {new_location.stat().st_mode}')
 
         self.__location = new_location
