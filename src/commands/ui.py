@@ -10,8 +10,4 @@ class UICommand(NamedCommand):
     async def main(self) -> None:
         app = ShinyHelperUI()
 
-        try:
-            await app.run_async()
-        finally:
-            self._loop = None
-            self._thread_id = 0
+        await app.run_async()
