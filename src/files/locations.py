@@ -1,18 +1,7 @@
-import re
 from pathlib import Path
-
-from ..errors import NonAlphanumericString
 
 PROGRAM_CONFIG: Path = Path.home() / '.config/shiny-helper'
 SAVED_HUNTS: Path = PROGRAM_CONFIG / 'counters'
-
-
-class AlphanumericString(str):
-    def __init__(self, data: object) -> None:
-        self = str(data)
-
-        if re.fullmatch(r'[\w\d]*', self) is None:
-            raise NonAlphanumericString('Alphanumeric strings must contain only letters and numbers.')
 
 
 def ready_to_be_file(location: Path) -> bool:

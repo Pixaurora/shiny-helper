@@ -14,7 +14,7 @@ class HuntChooser(OptionList):
         option_index: int | None = self.highlighted
 
         if option_index is None:
-            raise NoOptionSelected()
+            raise NoOptionSelected(self)
 
         name: str = str(self.get_option_at_index(option_index).prompt)
 
