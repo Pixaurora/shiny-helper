@@ -1,13 +1,10 @@
-from typing import TypedDict
+import json
 
 from ..errors import PokemonNotFound
 from .games import Game
 from .graphql import GraphQLClient
-
-
-class Move(TypedDict):
-    name: str
-    pp: int
+from .pokemon_data import Move
+from .sprites import SpriteForms
 
 
 class PokeAPIClient(GraphQLClient):
@@ -72,7 +69,7 @@ class PokeAPIClient(GraphQLClient):
 
         return [move['pokemon_v2_move'] for move in data['known_moves']]
 
-    async def get_sprite_locations(self, pokemon_name: str) -> dict:
+    async def get_sprite_locations(self, pokemon_name: str) -> SpriteForms[str]:
         exists: bool = await self.get_if_pokemon_exists(pokemon_name)
 
         if not exists:
@@ -90,4 +87,14 @@ class PokeAPIClient(GraphQLClient):
             pokemon_name=pokemon_name,
         )
 
-        return data['found_sprites'][0]['sprites']
+        all_sprite_links: dict = json.loads(data['found_sprites'][0]['sprites'])
+
+        relevant_links: SpriteForms[str] = {'normal': all_sprite_links['front_default'], 'shiny': all_sprite_links['front_shiny']}
+
+        for sprite_type in relevant_links:
+            link: str = relevant_links[sprite_type]
+            fixed_link: str = link[1:] if link[0] == '/' else link
+
+            relevant_links[sprite_type] = fixed_link
+
+        return relevant_links
