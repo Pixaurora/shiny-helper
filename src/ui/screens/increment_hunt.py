@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widget import Widget
@@ -9,8 +7,6 @@ from ...files import FilePoller, Hunt
 
 
 class IncrementHuntScreen(Screen):
-    TITLE = ""
-
     hunt: Hunt
 
     def __init__(self, hunt: Hunt) -> None:
@@ -18,7 +14,7 @@ class IncrementHuntScreen(Screen):
 
         self.hunt = hunt
 
-        poller: FilePoller = FilePoller(Path('./watched'), 5, self.increment)
+        poller: FilePoller = self.hunt.create_poller(update_function=self.increment)
         self.set_interval(poller.polling_delay, poller.poll_once)
 
     @property

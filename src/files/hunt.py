@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import Self, TypedDict
 
 from .json import SaveableToJSON
-from .locations import get_hunt_location, get_name_from_path
+from .locations import POLLED_FILES, get_hunt_location, get_name_from_path
+from .polling import FilePoller, UpdateFunction
 
 
 class HuntInfo(TypedDict):
@@ -37,3 +39,11 @@ class Hunt(SaveableToJSON[HuntInfo]):
     @name.setter
     def name(self, new_name: str) -> None:
         self.location = get_hunt_location(new_name)
+
+    def create_poller(
+        self, watched_file: Path | None = None, polling_rate: int = 5, update_function: UpdateFunction | None = None
+    ) -> FilePoller:
+        if watched_file is None:
+            watched_file = POLLED_FILES / self.name
+
+        return FilePoller(watched_file, polling_rate, update_function)

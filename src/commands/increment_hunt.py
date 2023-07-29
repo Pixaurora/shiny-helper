@@ -8,17 +8,17 @@ class IncrementHuntCommand(NamedCommand):
     increment: int = 1
     hunt_name: AlphanumericString
 
-    signal_file: Path = Path('./watched')
-    polling_rate: int = 10
+    watched_file: Path | None = None
+    polling_rate: int = 5
 
     @property
     def name(self) -> str:
         return 'incrementHunt'
 
     async def main(self) -> None:
-        poller = FilePoller(self.signal_file, self.polling_rate)
-
         hunt = Hunt.loaded_from_name(self.hunt_name)
+
+        poller: FilePoller = hunt.create_poller(self.watched_file, self.polling_rate)
 
         @poller.on_update
         async def on_update() -> None:
@@ -28,6 +28,6 @@ class IncrementHuntCommand(NamedCommand):
             print(f'{hunt.name} encounters: {hunt.count - self.increment} -> {hunt.count}')
 
         print(f'Hunt {self.hunt_name} is currently at {hunt.count} encounters total.')
-        print(f'Run `touch {self.signal_file.absolute()}` in a different shell to increment the hunt!')
+        print(f'Run `touch {poller.file_to_poll.absolute()}` in a different shell to increment the hunt!')
 
         await poller.poll_forever()

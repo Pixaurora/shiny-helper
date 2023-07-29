@@ -5,6 +5,7 @@ SAVED_HUNTS: Path = PROGRAM_CONFIG / 'counters'
 
 PROGRAM_CACHE: Path = Path.home() / '.cache/shiny-helper'
 IMAGE_CACHE: Path = PROGRAM_CACHE / 'images'
+POLLED_FILES: Path = PROGRAM_CACHE / 'polled'
 
 
 def ready_to_be_file(location: Path) -> bool:

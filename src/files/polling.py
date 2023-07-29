@@ -2,6 +2,9 @@ import asyncio
 from pathlib import Path
 from typing import Any, Callable, Coroutine, NoReturn
 
+from ..errors import InvalidLocationType
+from .locations import ready_to_be_file
+
 UpdateFunction = Callable[[], Coroutine[Any, Any, None]]
 
 
@@ -14,6 +17,9 @@ class FilePoller:
     update_function: UpdateFunction | None
 
     def __init__(self, path: Path, polling_rate: int, update_function: UpdateFunction | None = None) -> None:
+        if not ready_to_be_file(path):
+            raise InvalidLocationType(path)
+
         self.file_to_poll = path
         self.remembered_file_time = self.get_modified_time()
 
