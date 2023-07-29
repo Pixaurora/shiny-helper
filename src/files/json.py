@@ -53,7 +53,7 @@ class SaveableToJSON(SerializableToDict[D], Protocol):
 
     @classmethod
     def loaded_from(cls, location: Path) -> Self:
-        if not location.is_file():
+        if location.exists() and not location.is_file():
             raise InvalidLocationType(location)
 
         with open(location, 'r') as file:
