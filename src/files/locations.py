@@ -3,6 +3,9 @@ from pathlib import Path
 PROGRAM_CONFIG: Path = Path.home() / '.config/shiny-helper'
 SAVED_HUNTS: Path = PROGRAM_CONFIG / 'counters'
 
+PROGRAM_CACHE: Path = Path.home() / '.cache/shiny-helper'
+IMAGE_CACHE: Path = PROGRAM_CACHE / 'images'
+
 
 def ready_to_be_file(location: Path) -> bool:
     if not location.exists():

@@ -11,6 +11,6 @@ class PokemonSpriteCommand(NamedCommand):
 
     async def main(self) -> None:
         async with PokeAPIClient(gen_7_games[0]) as client:
-            sprites = await client.get_sprite_locations(self.pokemon_name)
+            sprites = await client.get_sprite_images(self.pokemon_name)
 
-        print(sprites)
+        print('Success! Sprites should be in cache.')
