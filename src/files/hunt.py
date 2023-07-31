@@ -7,14 +7,19 @@ from .polling import FilePoller, UpdateFunction
 
 
 class HuntInfo(TypedDict):
-    count: int
+    species: str
+
+    encounters: int
 
 
 class Hunt(SaveableToJSON[HuntInfo]):
-    count: int
+    species: str
 
-    def __init__(self, count: int) -> None:
-        self.count = count
+    encounters: int
+
+    def __init__(self, species: str, encounters: int) -> None:
+        self.species = species
+        self.encounters = encounters
 
     @classmethod
     def from_data(cls, data: HuntInfo) -> Self:
@@ -22,11 +27,11 @@ class Hunt(SaveableToJSON[HuntInfo]):
 
     @staticmethod
     def default_data() -> HuntInfo:
-        return {'count': 0}
+        return {'species': 'pikachu', 'encounters': 0}
 
     @property
     def data(self) -> HuntInfo:
-        return {'count': self.count}
+        return { 'species': self.species, 'encounters': self.encounters}
 
     @classmethod
     def loaded_from_name(cls, name: str) -> Self:

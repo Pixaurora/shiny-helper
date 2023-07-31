@@ -3,7 +3,9 @@ from .base import NamedCommand
 
 
 class InitializeHuntCommand(NamedCommand):
+    species: str
     first_value: int = 0
+
     hunt_name: AlphanumericString
 
     @property
@@ -11,7 +13,7 @@ class InitializeHuntCommand(NamedCommand):
         return 'initHunt'
 
     async def main(self) -> None:
-        new_hunt: Hunt = Hunt.from_data({'count': self.first_value})
+        new_hunt: Hunt = Hunt(self.species, self.first_value)
         new_hunt.name = self.hunt_name
 
         new_hunt.save()
