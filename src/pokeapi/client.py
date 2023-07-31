@@ -5,7 +5,7 @@ from ..files import get_image_from_cache, put_image_into_cache
 from .games import Game
 from .graphql import GraphQLClient
 from .pokemon_data import Move
-from .sprites import SpriteForms
+from .sprites import SPRITE_MAPPING
 
 
 class PokeAPIClient(GraphQLClient):
@@ -70,7 +70,7 @@ class PokeAPIClient(GraphQLClient):
 
         return [move['pokemon_v2_move'] for move in data['known_moves']]
 
-    async def get_sprite_locations(self, pokemon_name: str) -> SpriteForms[str]:
+    async def get_sprite_locations(self, pokemon_name: str) -> dict[str, str]:
         exists: bool = await self.get_if_pokemon_exists(pokemon_name)
 
         if not exists:
@@ -80,9 +80,9 @@ class PokeAPIClient(GraphQLClient):
             'https://beta.pokeapi.co/graphql/v1beta',
             """
             query getWildMoveset($pokemon_name: String) {
-            found_sprites: pokemon_v2_pokemonsprites(where: {pokemon_v2_pokemon: {name: {_eq: $pokemon_name}}}) {
-                sprites
-            }
+                found_sprites: pokemon_v2_pokemonsprites(where: {pokemon_v2_pokemon: {name: {_eq: $pokemon_name}}}) {
+                    sprites
+                }
             }
             """,
             pokemon_name=pokemon_name,
@@ -90,7 +90,9 @@ class PokeAPIClient(GraphQLClient):
 
         all_sprite_links: dict = json.loads(data['found_sprites'][0]['sprites'])
 
-        relevant_links: SpriteForms[str] = {'normal': all_sprite_links['front_default'], 'shiny': all_sprite_links['front_shiny']}
+        relevant_links: dict[str, str] = {
+            sprite_type: all_sprite_links[json_key] for sprite_type, json_key in SPRITE_MAPPING.items()
+        }
 
         for sprite_type in relevant_links:
             link: str = relevant_links[sprite_type]
@@ -106,7 +108,7 @@ class PokeAPIClient(GraphQLClient):
         if cached_image is not None:
             return cached_image
 
-        remote_link = link.replace('media', 'https://raw.githubusercontent.com/PokeAPI/sprites/master')
+        remote_link: str = link.replace('media', 'https://raw.githubusercontent.com/PokeAPI/sprites/master')
 
         async with self.get(remote_link) as response:
             image: bytes = await response.read()
@@ -114,11 +116,7 @@ class PokeAPIClient(GraphQLClient):
 
             return image
 
-    async def get_sprite_images(self, pokemon_name: str) -> SpriteForms[bytes]:
-        relevant_links: SpriteForms[str] = await self.get_sprite_locations(pokemon_name)
+    async def get_sprite_images(self, pokemon_name: str) -> dict[str, bytes]:
+        relevant_links: dict[str, str] = await self.get_sprite_locations(pokemon_name)
 
-        images: SpriteForms[bytes] = {'normal': bytes(), 'shiny': bytes()}
-        for sprite_type in relevant_links:
-            images[sprite_type] = await self.get_sprite_image(relevant_links[sprite_type])
-
-        return images
+        return {sprite_type: await self.get_sprite_image(link) for sprite_type, link in relevant_links.items()}
