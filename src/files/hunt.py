@@ -31,7 +31,7 @@ class Hunt(SaveableToJSON[HuntInfo]):
 
     @property
     def data(self) -> HuntInfo:
-        return { 'species': self.species, 'encounters': self.encounters}
+        return {'species': self.species, 'encounters': self.encounters}
 
     @classmethod
     def loaded_from_name(cls, name: str) -> Self:

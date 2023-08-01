@@ -1,3 +1,4 @@
 aiohttp
 typed-argument-parser
 textual
+Pillow-SIMD

@@ -1,4 +1,7 @@
+import io
 import json
+
+from PIL import Image
 
 from ..errors import PokemonNotFound
 from ..files import get_image_from_cache, put_image_into_cache
@@ -102,8 +105,8 @@ class PokeAPIClient(GraphQLClient):
 
         return relevant_links
 
-    async def get_sprite_image(self, link: str) -> bytes:
-        cached_image: bytes | None = get_image_from_cache(link)
+    async def get_sprite_image(self, link: str) -> Image.Image:
+        cached_image: Image.Image | None = get_image_from_cache(link)
 
         if cached_image is not None:
             return cached_image
@@ -111,12 +114,12 @@ class PokeAPIClient(GraphQLClient):
         remote_link: str = link.replace('media', 'https://raw.githubusercontent.com/PokeAPI/sprites/master')
 
         async with self.get(remote_link) as response:
-            image: bytes = await response.read()
+            image: Image.Image = Image.open(io.BytesIO(await response.read()))
             put_image_into_cache(link, image)
 
             return image
 
-    async def get_sprite_images(self, pokemon_name: str) -> dict[str, bytes]:
+    async def get_sprite_images(self, pokemon_name: str) -> dict[str, Image.Image]:
         relevant_links: dict[str, str] = await self.get_sprite_locations(pokemon_name)
 
         return {sprite_type: await self.get_sprite_image(link) for sprite_type, link in relevant_links.items()}

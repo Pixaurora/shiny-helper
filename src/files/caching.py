@@ -1,23 +1,24 @@
 from pathlib import Path
 
+from PIL import Image
+
 from ..errors import InvalidLocationType
 from .locations import IMAGE_CACHE, ready_to_be_file
 
 
-def get_image_from_cache(name: str) -> bytes | None:
+def get_image_from_cache(name: str) -> Image.Image | None:
     cached_location: Path = IMAGE_CACHE / name
 
     if not cached_location.exists():
         return
 
-    return open(cached_location, 'rb').read()
+    return Image.open(cached_location)
 
 
-def put_image_into_cache(name: str, data: bytes) -> None:
+def put_image_into_cache(name: str, image: Image.Image) -> None:
     cached_location: Path = IMAGE_CACHE / name
 
     if not ready_to_be_file(cached_location):
         raise InvalidLocationType(cached_location)
 
-    with open(cached_location, 'wb') as file:
-        file.write(data)
+    image.save(cached_location)
