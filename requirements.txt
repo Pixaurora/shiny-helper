@@ -1,4 +1,5 @@
 aiohttp
 typed-argument-parser
 textual
+textual_canvas
 Pillow-SIMD

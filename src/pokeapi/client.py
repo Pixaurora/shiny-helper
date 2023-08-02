@@ -8,7 +8,7 @@ from ..files import get_image_from_cache, put_image_into_cache
 from .games import Game
 from .graphql import GraphQLClient
 from .pokemon_data import Move
-from .sprites import SPRITE_MAPPING
+from .sprites import SPRITE_MAPPING, prepare_sprite
 
 
 class PokeAPIClient(GraphQLClient):
@@ -115,6 +115,7 @@ class PokeAPIClient(GraphQLClient):
 
         async with self.get(remote_link) as response:
             image: Image.Image = Image.open(io.BytesIO(await response.read()))
+            image = prepare_sprite(image)
             put_image_into_cache(link, image)
 
             return image
