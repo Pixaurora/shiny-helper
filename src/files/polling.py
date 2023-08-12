@@ -1,11 +1,11 @@
 import asyncio
 from pathlib import Path
-from typing import Any, Callable, Coroutine, NoReturn
+from typing import Callable, Awaitable, NoReturn
 
 from ..errors import InvalidLocationType
 from .locations import ready_to_be_file
 
-UpdateFunction = Callable[[], Coroutine[Any, Any, None]]
+UpdateFunction = Callable[[], Awaitable[None]]
 
 
 class FilePoller:
