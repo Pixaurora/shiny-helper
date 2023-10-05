@@ -1,12 +1,30 @@
+from __future__ import annotations
+
 from PIL import Image
 from textual.app import ComposeResult
-from textual.color import Color
+from textual.containers import Container
 from textual.screen import Screen
 from textual.widget import Widget
-from textual.widgets import Button, Label
-from textual_canvas.canvas import Canvas
+from textual.widgets import Button, Label, Static
 
 from ...files import FilePoller, Hunt
+from ..common import ImageCanvas
+
+
+class HuntVisualizer(Static):
+    parent_screen: IncrementHuntScreen
+
+    def __init__(self, parent: IncrementHuntScreen) -> None:
+        super().__init__(id='hunt_visualizer')
+
+        self.parent_screen = parent
+
+    def compose(self) -> ComposeResult:
+        for form, sprite in self.parent_screen.sprites.items():
+            yield ImageCanvas(sprite, id=form)
+
+    async def on_button_pressed(self) -> None:
+        await self.parent_screen.increment()
 
 
 class IncrementHuntScreen(Screen):
@@ -27,19 +45,7 @@ class IncrementHuntScreen(Screen):
         return f'Encounter! {self.hunt.encounters}'
 
     def compose(self) -> ComposeResult:
-        yield Label('Gone hunting!')
-        yield Button(self.button_text, id='hunt_count')
-
-        for sprite_type in self.sprites:
-            image: Image.Image = self.sprites[sprite_type]
-            canvas: Canvas = Canvas(image.width, image.height, id=sprite_type)
-
-            for x in range(image.width):
-                for y in range(image.height):
-                    color: tuple[int, int, int, int] = image.getpixel((x, y))
-                    canvas.set_pixel(x, y, Color(*color))
-
-            yield canvas
+        yield Container(Label('Gone hunting!'), Button(self.button_text, id='hunt_count'), HuntVisualizer(self))
 
     async def increment(self) -> None:
         self.hunt.encounters += 1

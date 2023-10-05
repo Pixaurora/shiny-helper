@@ -8,6 +8,7 @@ from .screens import HuntSelectScreen, IncrementHuntScreen
 
 
 class ShinyHelperUI(App):
+    CSS_PATH = "shiny_helper.css"
     TITLE = 'Shiny Helper'
 
     def compose(self) -> ComposeResult:

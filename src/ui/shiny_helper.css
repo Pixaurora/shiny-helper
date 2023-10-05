@@ -1,0 +1,12 @@
+Button {
+    width: auto;
+    align: center middle;
+}
+
+Canvas {
+    width: auto;
+}
+
+HuntVisualizer {
+    layout: horizontal;
+}
